@@ -1,10 +1,11 @@
 // src/App.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import MovieList from "./components/MovieList";
 import GeneralFilter from "./components/GeneralFilter";
 import SearchBar from "./components/SearchBar";
 import "./App.css";
+import Loader from "./components/Loader";
 
 const App = () => {
   const [movies, setMovies] = useState([]);
@@ -14,6 +15,7 @@ const App = () => {
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [genresName, setGenresName] = useState({});
+  const [loadedYears, setLoadedYears] = useState([2012]);
 
   useEffect(() => {
     fetchGenres();
@@ -61,7 +63,11 @@ const App = () => {
         },
       }
     );
-    setMovies(response.data.results);
+    setMovies((prevMovies) => ({
+      ...prevMovies,
+      [year]: response.data.results,
+    }));
+
     setLoading(false);
   };
 
@@ -83,14 +89,70 @@ const App = () => {
   const handleSearch = (term) => {
     setSearchTerm(term);
   };
+  const handleObserver = useCallback(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const year = parseInt(entry.target.dataset.year, 10);
+          if (entry.target.dataset.direction === "up") {
+            const newYear = year - 1;
+            if (newYear >= 2012 && !loadedYears.includes(newYear)) {
+              setLoadedYears((prevYears) => [...prevYears, newYear]);
+              fetchMovies(newYear, selectedGenres.join(","), searchTerm);
+            }
+          } else {
+            const newYear = year + 1;
+            if (newYear <= 2023 && !loadedYears.includes(newYear)) {
+              setLoadedYears((prevYears) => [...prevYears, newYear]);
+              fetchMovies(newYear, selectedGenres.join(","), searchTerm);
+            }
+          }
+        }
+      });
+    },
+    [fetchMovies, loadedYears, selectedGenres, searchTerm]
+  );
+  useEffect(() => {
+    const observer = new IntersectionObserver(handleObserver, {
+      threshold: 1.0,
+    });
+    const upSentinel = document.querySelector("#up-sentinel");
+    const downSentinel = document.querySelector("#down-sentinel");
+
+    if (upSentinel) observer.observe(upSentinel);
+    if (downSentinel) observer.observe(downSentinel);
+
+    return () => {
+      if (upSentinel) observer.unobserve(upSentinel);
+      if (downSentinel) observer.unobserve(downSentinel);
+    };
+  }, [handleObserver]);
 
   return (
-    <div className="App" onScroll={handleScroll}>
+    <div className="App">
       <h1>Movie Information</h1>
+
       <SearchBar onSearch={handleSearch} />
       <GeneralFilter genres={genres} onChange={handleGenreChange} />
-      {loading && <p>Loading...</p>}
-      <MovieList movies={movies} genresName={genresName} />
+      {loading && <Loader />}
+      <div
+        id="up-sentinel"
+        data-year={Math.min(...loadedYears)}
+        data-direction="up"
+      ></div>
+      {loadedYears
+        .sort((a, b) => a - b)
+        .map((year) => (
+          <React.Fragment key={year}>
+            <h2>{year}</h2>
+            <MovieList movies={movies[year] || []} />
+          </React.Fragment>
+        ))}
+      <div
+        id="down-sentinel"
+        data-year={Math.max(...loadedYears)}
+        data-direction="down"
+      ></div>
     </div>
   );
 };

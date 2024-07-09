@@ -2,10 +2,11 @@
 .App {
   text-align: center;
   padding: 20px;
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
-  height: 100vh;
+  height: 100%;
   overflow-y: auto;
+  background-color: #121212;
 }
 
 /* src/components/MovieList.css */
@@ -23,13 +24,15 @@
 
 /* src/components/MovieCard.css */
 .movie-card {
-  width: 200px;
+  width: 20%;
   margin: 10px;
   border: 1px solid #ccc;
   border-radius: 10px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  background-color: #1c1b1b;
+  color: #f9f9f9;
 }
 
 .movie-card img {
@@ -114,5 +117,67 @@
     margin-left: 0;
     margin-top: 10px;
     border-radius: 5px;
+  }
+}
+
+/* Loader.css */
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loader {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  animation: spin 4s linear infinite;
+}
+
+.loader span {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  transform-origin: 90px 90px;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #e91717;
+}
+
+.loader span:nth-child(1) {
+  transform: rotate(0deg) translate(90px);
+}
+.loader span:nth-child(2) {
+  transform: rotate(40deg) translate(90px);
+}
+.loader span:nth-child(3) {
+  transform: rotate(80deg) translate(90px);
+}
+.loader span:nth-child(4) {
+  transform: rotate(120deg) translate(90px);
+}
+.loader span:nth-child(5) {
+  transform: rotate(160deg) translate(90px);
+}
+.loader span:nth-child(6) {
+  transform: rotate(200deg) translate(90px);
+}
+.loader span:nth-child(7) {
+  transform: rotate(240deg) translate(90px);
+}
+.loader span:nth-child(8) {
+  transform: rotate(280deg) translate(90px);
+}
+.loader span:nth-child(9) {
+  transform: rotate(320deg) translate(90px);
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
