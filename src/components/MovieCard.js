@@ -3,8 +3,8 @@ import React from "react";
 import "../App.css";
 
 const MovieCard = ({ movie, genresName }) => {
-  //let names = movie.genre_ids?.map((el) => genresName[el]);
-  //console.log(names);
+  let names = movie.genre_ids?.map((el) => genresName[el]);
+  console.log(names);
   return (
     <div className="movie-card">
       <img
@@ -15,7 +15,7 @@ const MovieCard = ({ movie, genresName }) => {
         <h2>{movie.title}</h2>
         <p>{movie.overview}</p>
         <p>
-          <strong>Genre:</strong>
+          <strong>Genre:</strong> {names.join(", ")}
         </p>
         <p>
           <strong>Popularity:</strong> {movie.popularity}

@@ -26,18 +26,23 @@
 .movie-card {
   width: 20%;
   margin: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #1b1818;
   border-radius: 10px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   background-color: #1c1b1b;
   color: #f9f9f9;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 .movie-card img {
   width: 100%;
   height: auto;
+}
+.movie-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .movie-info {
@@ -65,12 +70,13 @@
   padding: 10px;
   border: none;
   border-radius: 5px;
-  background-color: #ccc;
+  color: #f9f9f9;
+  background-color: #000000;
   cursor: pointer;
 }
 
 .genre-button.selected {
-  background-color: #007bff;
+  background-color: #e91717;
   color: white;
 }
 
@@ -96,7 +102,7 @@
   padding: 10px 20px;
   font-size: 16px;
   border: none;
-  background-color: #007bff;
+  background-color: #e91717;
   color: white;
   border-radius: 5px;
   cursor: pointer;
@@ -104,7 +110,7 @@
 }
 
 .search-bar button:hover {
-  background-color: #0056b3;
+  background-color: #e91717;
 }
 
 @media (max-width: 768px) {
@@ -180,4 +186,34 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+/*Logo*/
+
+.App h1 {
+  font-family: Impact, Charcoal, sans-serif;
+  font-size: 50px;
+  letter-spacing: -0.6px;
+  word-spacing: 0px;
+  text-align: left;
+  color: #e91717;
+  font-weight: 400;
+  text-decoration: none;
+  font-style: normal;
+  font-variant: normal;
+  text-transform: uppercase;
+}
+
+.year {
+  font-family: Impact, Charcoal, sans-serif;
+  font-size: 40px;
+  letter-spacing: -0.6px;
+  word-spacing: 0px;
+  text-shadow: 0 0 3px #ffffff, 0 0 5px #ffffff;
+  color: #292222;
+  font-weight: 400;
+  text-decoration: none;
+  font-style: normal;
+  font-variant: normal;
+  text-transform: uppercase;
 }

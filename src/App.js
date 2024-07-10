@@ -16,11 +16,16 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [genresName, setGenresName] = useState({});
   const [loadedYears, setLoadedYears] = useState([2012]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchPage, setSearchPage] = useState(1);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isReset, setIsReset] = useState(false);
+  const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     fetchGenres();
     fetchMovies(year, searchTerm);
-  }, [year, selectedGenres, searchTerm]);
+  }, [year, selectedGenres]);
 
   const fetchGenres = async () => {
     const response = await axios.get(
@@ -43,6 +48,7 @@ const App = () => {
   };
 
   const fetchMovies = async (year, searchTerm = "") => {
+    // if (loadedYears.has(year)) return;
     setLoading(true);
     const genreQuery = selectedGenres.length
       ? `&with_genres=${selectedGenres.join(",")}`
@@ -102,7 +108,7 @@ const App = () => {
             }
           } else {
             const newYear = year + 1;
-            if (newYear <= 2023 && !loadedYears.includes(newYear)) {
+            if (newYear <= currentYear && !loadedYears.includes(newYear)) {
               setLoadedYears((prevYears) => [...prevYears, newYear]);
               fetchMovies(newYear, selectedGenres.join(","), searchTerm);
             }
@@ -128,9 +134,46 @@ const App = () => {
     };
   }, [handleObserver]);
 
+  const fetchSearchResults = useCallback(async (term, page = 1) => {
+    setLoading(true);
+    const response = await axios.get(
+      `https://api.themoviedb.org/3/search/movie`,
+      {
+        params: {
+          api_key: process.env.REACT_APP_TMDB_API_KEY,
+          query: term,
+          page,
+        },
+      }
+    );
+    setMovies((prevMovies) => ({
+      ...prevMovies,
+      [year]: response.data.results,
+    }));
+    setLoading(false);
+  }, []);
+  useEffect(() => {
+    if (searchTerm) {
+      setIsSearching(true);
+      fetchSearchResults(searchTerm, 1);
+    } else {
+      setIsSearching(false);
+      setSearchResults([]);
+    }
+  }, [searchTerm, fetchSearchResults]);
+
+  const reset = () => {
+    setIsReset(true);
+    setSearchTerm("");
+
+    setSelectedGenres([]);
+    fetchMovies(year, searchTerm);
+  };
+
   return (
     <div className="App">
-      <h1>Movie Information</h1>
+      {console.log(movies[year])}
+      <h1 onClick={() => reset()}>MOVIEFLIX</h1>
 
       <SearchBar onSearch={handleSearch} />
       <GeneralFilter genres={genres} onChange={handleGenreChange} />
@@ -144,8 +187,8 @@ const App = () => {
         .sort((a, b) => a - b)
         .map((year) => (
           <React.Fragment key={year}>
-            <h2>{year}</h2>
-            <MovieList movies={movies[year] || []} />
+            {/* <h2 className="year">{year}</h2> */}
+            <MovieList movies={movies[year] || []} genresName={genresName} />
           </React.Fragment>
         ))}
       <div
